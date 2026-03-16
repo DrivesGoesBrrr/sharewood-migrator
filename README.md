@@ -11,7 +11,8 @@ CLI pour:
 Prerequis:
 
 - Python 3.12+
-- dependances du projet installees (`requests`, `beautifulsoup4`)
+- dependances du projet installees (`requests`)
+- avant archives des torrents ShareWood
 
 Avec `uv`:
 
