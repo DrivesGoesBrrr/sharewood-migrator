@@ -672,6 +672,126 @@ def qb_add_tracker(
         raise RuntimeError(message) from last_error
 
 
+def _contains_sharewood_tracker(trackers_payload: Any) -> bool:
+    if not isinstance(trackers_payload, list):
+        return False
+
+    for item in trackers_payload:
+        if not isinstance(item, dict):
+            continue
+        url = item.get("url")
+        if isinstance(url, str) and "sharewood.tv" in url.lower():
+            return True
+
+    return False
+
+
+def qb_get_all_torrents(
+    session: requests.Session,
+    qb_url: str,
+    timeout: int,
+) -> list[dict[str, Any]]:
+    response = session.get(
+        f"{qb_url}/api/v2/torrents/info",
+        timeout=timeout,
+    )
+    response.raise_for_status()
+
+    payload = response.json()
+    if not isinstance(payload, list):
+        return []
+    return [item for item in payload if isinstance(item, dict)]
+
+
+def fix_trackers(
+    config: AppConfig,
+    dry_run: bool,
+    qb_timeout: int,
+) -> None:
+    session = requests.Session()
+    qb_login(
+        session=session,
+        qb_url=config.qbittorrent_url,
+        username=config.qb_username,
+        password=config.qb_password,
+        timeout=qb_timeout,
+    )
+
+    torrents = qb_get_all_torrents(
+        session=session,
+        qb_url=config.qbittorrent_url,
+        timeout=qb_timeout,
+    )
+
+    scanned = 0
+    eligible = 0
+    already_ok = 0
+    added = 0
+    errors = 0
+
+    for item in torrents:
+        current_hash = item.get("hash")
+        if not isinstance(current_hash, str) or not current_hash.strip():
+            continue
+
+        torrent_hash = current_hash.strip()
+        scanned += 1
+
+        try:
+            response = session.get(
+                f"{config.qbittorrent_url}/api/v2/torrents/trackers",
+                params={"hash": torrent_hash},
+                timeout=qb_timeout,
+            )
+            response.raise_for_status()
+            trackers_payload = response.json()
+        except requests.RequestException as error:
+            errors += 1
+            print(f"ERROR trackers read | hash={torrent_hash} | {error}")
+            continue
+
+        if not _contains_sharewood_tracker(trackers_payload):
+            continue
+
+        eligible += 1
+
+        if qb_has_tracker(
+            session=session,
+            qb_url=config.qbittorrent_url,
+            torrent_hash=torrent_hash,
+            tracker_url=config.tracker_url,
+            timeout=qb_timeout,
+        ):
+            already_ok += 1
+            print(f"OK tracker already present | hash={torrent_hash}")
+            continue
+
+        if dry_run:
+            print(f"DRY-RUN add torr9 tracker | hash={torrent_hash}")
+            continue
+
+        try:
+            qb_add_tracker(
+                session=session,
+                qb_url=config.qbittorrent_url,
+                torrent_hash=torrent_hash,
+                tracker_url=config.tracker_url,
+                timeout=qb_timeout,
+            )
+            added += 1
+            print(f"ADDED torr9 tracker | hash={torrent_hash}")
+        except (requests.RequestException, RuntimeError) as error:
+            errors += 1
+            print(f"ERROR tracker add | hash={torrent_hash} | {error}")
+
+    print("\nSummary")
+    print(f"Scanned torrents: {scanned}")
+    print(f"With sharewood tracker: {eligible}")
+    print(f"Already had torr9 tracker: {already_ok}")
+    print(f"Torr9 tracker added: {added}")
+    print(f"Errors: {errors}")
+
+
 def _parse_id_ranges(values: list[str]) -> list[tuple[int, int]]:
     ranges: list[tuple[int, int]] = []
     for value in values:
@@ -1023,6 +1143,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="HTTP timeout for qBittorrent requests (default: 30)",
     )
 
+    fix_parser = subparsers.add_parser(
+        "fix-trackers",
+        help="Add torr9 tracker in bulk to torrents already using a sharewood.tv tracker.",
+    )
+    fix_parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print actions without applying changes",
+    )
+    fix_parser.add_argument(
+        "--qb-timeout",
+        type=int,
+        default=30,
+        help="HTTP timeout for qBittorrent requests (default: 30)",
+    )
+
     return parser
 
 
@@ -1059,6 +1195,14 @@ def main() -> None:
             limit=args.limit,
             dry_run=args.dry_run,
             check_timeout=args.check_timeout,
+            qb_timeout=args.qb_timeout,
+        )
+        return
+
+    if args.command == "fix-trackers":
+        fix_trackers(
+            config=config,
+            dry_run=args.dry_run,
             qb_timeout=args.qb_timeout,
         )
         return
