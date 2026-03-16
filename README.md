@@ -3,7 +3,7 @@
 > [!IMPORTANT] 
 > Merci de faire attention a la charge du site torr9.
 >
-> - Si le site lag, evitez de lancer `pull-cache`: c'est une tache lourde.
+> - Si le site lag, evitez de lancer `pull-cache`: c'est une tache lourde. ~40min avec 1req/s pour les 2441 pages
 > - Si vous devez quand meme builder le cache, augmentez `--pause-seconds` pour eviter de saturer le serveur.
 > - Une fois le cache construit, inutile de le rebuild en permanence: c'est surtout utile pour le bootstrap initial.
 > - Le tool recheck dans tous les cas l'etat sur torr9 avant chaque ajout dans qBittorrent (si un seeder existe deja, il n'ajoute pas), pour economiser votre espace disque et laisser la place aux torrents pas encore sauves.
