@@ -207,3 +207,87 @@ Exemple (valeurs par defaut):
 ```bash
 uv run sharewood-migrator --config config.toml fix-trackers --qb-timeout 30
 ```
+
+
+## Workflow complet
+
+### 1. Cloner le repo et installer les dependances
+
+```bash
+git clone https://github.com/TON_USER/sharewood-migrator.git
+cd sharewood-migrator
+uv sync
+```
+
+### 2. Configurer
+
+```bash
+cp sharewood.toml.example sharewood.toml
+```
+
+Renseigner `torr9_jwt`, `sharewood_archive_dir`, `qbittorrent_url` et `tracker_url`.
+Voir [Recuperer le JWT torr9](#recuperer-le-jwt-torr9-torr9_jwt) et [Recuperer l'archive Sharewood](#recuperer-et-configurer-larchive-sharewood).
+
+### 3. Builder le cache (bootstrap unique)
+
+```bash
+uv run sharewood-migrator --config sharewood.toml pull-cache
+```
+
+Si le site lag, augmenter la pause entre les pages:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml pull-cache --pause-seconds 3
+```
+
+### 4. Afficher les categories
+
+```bash
+uv run sharewood-migrator --config sharewood.toml categories
+```
+
+Affiche pour chaque categorie le total de torrents et le nombre de torrents a 0 seeder (`rescue`).
+
+### 5. Importer une categorie avec filtres (dry-run d'abord)
+
+Tester sans ajouter dans qBittorrent:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml sync --category "Video" --dry-run
+```
+
+Limiter le nombre de torrents traites:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml sync --category "Video" --limit 20 --dry-run
+```
+
+Filtrer par taille (en bytes):
+
+```bash
+uv run sharewood-migrator --config sharewood.toml sync --category "Video" --max-size 10737418240 --dry-run
+```
+
+Une fois satisfait, lancer sans `--dry-run`:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml sync --category "Video" --limit 20
+```
+
+Voir tous les filtres disponibles dans la section [Sync vers qBittorrent](#3-sync-vers-qbittorrent).
+
+### 6. Corriger les trackers manquants
+
+Il arrive que l'ajout du tracker echoue lors du `sync`. Pour le corriger en masse:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml fix-trackers --dry-run
+```
+
+Puis sans `--dry-run`:
+
+```bash
+uv run sharewood-migrator --config sharewood.toml fix-trackers
+```
+
+Voir le detail dans la section [Fix trackers en masse](#4-fix-trackers-en-masse).
