@@ -1,0 +1,11 @@
+torr9_jwt = "PUT_YOUR_TORR9_JWT_HERE"
+qbittorrent_url = "http://127.0.0.1:8080"
+tracker_url = "https://tracker.torr9.net/announce/abcdef1234567890"
+sharewood_archive_dir = "SharewoodArchive"
+cache_dir = "cache"
+qb_add_tag = "sharewood-migrator"
+qb_add_save_path = "/media/downloads/sharewood-migrator"
+
+# Optional if qBittorrent auth is enabled
+qb_username = "admin"
+qb_password = "adminadmin"
