@@ -56,7 +56,7 @@ qb_username = "admin"
 qb_password = "adminadmin"
 ```
 
-## Recuperer le JWT torr9 (`torr9_jwt`)
+### Recuperer le JWT torr9 (`torr9_jwt`)
 
 Pour remplir `torr9_jwt` dans `sharewood.toml`:
 
@@ -74,6 +74,23 @@ torr9_jwt = "PASTE_COOKIE_TOKEN_HERE"
 ```
 
 Note: ce token donne acces a ton compte torr9. Ne le partage jamais.
+
+### Recuperer et configurer l'archive Sharewood
+
+Pour que le tool puisse retrouver les `.torrent` a ajouter, il faut d'abord recuperer l'archive Sharewood:
+
+1. Telecharge sur torr9 le torrent `Sharewood.Archive.2026.zip`.
+2. Une fois le download termine, extrais le `.zip`.
+3. Repere le dossier extrait (celui qui contient l'arborescence de l'archive).
+4. Renseigne ce chemin dans `sharewood.toml` via `sharewood_archive_dir`.
+
+Exemple:
+
+```toml
+sharewood_archive_dir = "/chemin/vers/SharewoodArchive"
+```
+
+Le chemin peut etre absolu ou relatif au dossier du projet.
 
 ## Commandes
 
