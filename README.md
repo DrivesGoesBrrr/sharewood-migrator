@@ -37,7 +37,7 @@ Remplacer `uv run sharewood-migrator` par `python sharewood_cli.py`
 Copier l'exemple:
 
 ```bash
-cp sharewood.toml.example sharewood.toml
+cp config.toml.example config.toml
 ```
 
 Puis renseigner:
@@ -58,7 +58,7 @@ qb_password = "adminadmin"
 
 ### Recuperer le JWT torr9 (`torr9_jwt`)
 
-Pour remplir `torr9_jwt` dans `sharewood.toml`:
+Pour remplir `torr9_jwt` dans `config.toml`:
 
 1. Va sur la page d'accueil de torr9 et connecte-toi.
 2. Ouvre les outils de developpement avec `F12`.
@@ -82,7 +82,7 @@ Pour que le tool puisse retrouver les `.torrent` a ajouter, il faut d'abord recu
 1. Telecharge sur torr9 le torrent `Sharewood.Archive.2026.zip`.
 2. Une fois le download termine, extrais le `.zip`.
 3. Repere le dossier extrait (celui qui contient l'arborescence de l'archive).
-4. Renseigne ce chemin dans `sharewood.toml` via `sharewood_archive_dir`.
+4. Renseigne ce chemin dans `config.toml` via `sharewood_archive_dir`.
 
 Exemple:
 
@@ -124,7 +124,7 @@ Flags:
 Exemple (valeurs par defaut):
 
 ```bash
-uv run sharewood-migrator --config sharewood.toml pull-cache \
+uv run sharewood-migrator --config config.toml pull-cache \
   --start-page 0 \
   --page-size 100 \
   --pause-seconds 1.0 \
@@ -147,7 +147,7 @@ Flags:
 Exemple (valeurs par defaut):
 
 ```bash
-uv run sharewood-migrator --config sharewood.toml categories
+uv run sharewood-migrator --config config.toml categories
 ```
 
 ### 3) Sync vers qBittorrent
@@ -178,7 +178,7 @@ Flags:
 Exemple (valeurs par defaut):
 
 ```bash
-uv run sharewood-migrator --config sharewood.toml sync \
+uv run sharewood-migrator --config config.toml sync \
   --check-timeout 30 \
   --qb-timeout 30
 ```
@@ -197,5 +197,5 @@ Flags:
 Exemple (valeurs par defaut):
 
 ```bash
-uv run sharewood-migrator --config sharewood.toml fix-trackers --qb-timeout 30
+uv run sharewood-migrator --config config.toml fix-trackers --qb-timeout 30
 ```

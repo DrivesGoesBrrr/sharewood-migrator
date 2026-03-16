@@ -1083,8 +1083,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--config",
-        default="sharewood.toml",
-        help="TOML config path (default: sharewood.toml)",
+        default="config.toml",
+        help="TOML config path (default: config.toml)",
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
