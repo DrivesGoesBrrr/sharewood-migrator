@@ -56,7 +56,24 @@ qb_username = "admin"
 qb_password = "adminadmin"
 ```
 
-Les memes cles peuvent aussi etre placees dans une table `[sharewood]`.
+## Recuperer le JWT torr9 (`torr9_jwt`)
+
+Pour remplir `torr9_jwt` dans `sharewood.toml`:
+
+1. Va sur la page d'accueil de torr9 et connecte-toi.
+2. Ouvre les outils de developpement avec `F12`.
+3. Va dans l'onglet de stockage/cookies (`Application` ou `Storage` selon le navigateur).
+4. Ouvre les cookies du domaine torr9.
+5. Recupere la valeur du cookie `token`.
+6. Colle cette valeur dans `torr9_jwt`.
+
+Exemple:
+
+```toml
+torr9_jwt = "PASTE_COOKIE_TOKEN_HERE"
+```
+
+Note: ce token donne acces a ton compte torr9. Ne le partage jamais.
 
 ## Commandes
 
